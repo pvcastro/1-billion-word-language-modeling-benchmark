@@ -152,6 +152,7 @@ sub load_prefixes {
   }
   
   if (-e "$prefixfile") {
+    print STDERR "Using '$prefixfile' for language '$language'...\n";
     open(PREFIX, "<:utf8", "$prefixfile");
     while (<PREFIX>) {
       my $item = $_;
