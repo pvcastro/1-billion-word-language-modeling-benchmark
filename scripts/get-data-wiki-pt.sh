@@ -97,3 +97,16 @@ echo "Set aside shard 00000 of wiki-000??-of-00100 as held-out data."
   --num_shards=50 \
   --input_file=heldout-wiki/wiki-00000-of-00100
 echo "Done splitting held-out data into 50 shards."
+
+rm -rf heldout-wiki/wiki-00000-of-00100
+
+if [ -d training-wiki.tar.gz ]
+then
+    rm -rf training-wiki.tar.gz
+    rm -rf heldout-wiki.tar.gz
+else
+    tar -czvf training-wiki.tar.gz training-wiki
+    tar -czvf heldout-wiki.tar.gz heldout-wiki
+fi
+
+echo "python ./scripts/generate_vocabulary.py --corpus-prefix wiki --path-in "$(pwd)""

@@ -1,8 +1,17 @@
 .idea
 .ipynb_checkpoints
-heldout-wiki/
+train/
+training-harem/
+heldout-harem/
+training-jur/
+heldout-jur/
+training-lener/
+heldout-lener/
 training-wiki/
+heldout-wiki/
+wiki-processed/
 
 *.csv
 *.pem
 *.txt
+*.tar.gz
