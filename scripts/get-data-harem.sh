@@ -97,3 +97,16 @@ echo "Set aside shard 00000 of harem-000??-of-00010 as held-out data."
   --num_shards=1 \
   --input_file=heldout-harem/harem-00000-of-00010
 echo "Done splitting held-out data into 1 shard."
+
+rm -rf heldout-harem/harem-00000-of-00100
+
+if [ -d training-harem.tar.gz ]
+then
+    rm -rf training-harem.tar.gz
+    rm -rf heldout-harem.tar.gz
+else
+    tar -czvf training-harem.tar.gz training-harem
+    tar -czvf heldout-harem.tar.gz heldout-harem
+fi
+
+echo "python ./scripts/generate_vocabulary.py --corpus-prefix harem --path-in "$(pwd)""
