@@ -103,7 +103,9 @@ def generate_vocabulary(corpus_prefix: str, path_in: str, lang: str = 'pt', min_
     print('Reading data from %s' % path_in)
     path_in = Path(path_in)
     file_out = 'vocabulary_' + corpus_prefix + '_' + lang + '.txt'
+    file_original_out = 'vocabulary_original_' + corpus_prefix + '_' + lang + '.txt'
     path_out = Path(path_in) / file_out
+    path_original_out = Path(path_in) / file_original_out
 
     training_folder = 'training-' + corpus_prefix
     heldout_folder = 'heldout-' + corpus_prefix
@@ -119,8 +121,10 @@ def generate_vocabulary(corpus_prefix: str, path_in: str, lang: str = 'pt', min_
     total_number_of_tokens = sum(freq_full.values())
     print('Total number of tokens: %d' % total_number_of_tokens)
 
-    original_vocabulary_length = len([palavra for palavra, contagem in freq_full.most_common()])
+    original_vocabulary = sorted([palavra for palavra, contagem in freq_full.most_common()])
+    original_vocabulary_length = len(original_vocabulary)
     print('Original vocabulary length: %d' % original_vocabulary_length)
+    write_list(original_vocabulary, path_original_out)
 
     filtered = [palavra for palavra, contagem in freq_full.most_common() if contagem >= min_count]
     print('Total of words that occurred more than or equal %d times: %d' % (min_count, len(filtered)))
@@ -131,7 +135,7 @@ def generate_vocabulary(corpus_prefix: str, path_in: str, lang: str = 'pt', min_
     if discard_processes:
         filtered = filter_processes(filtered)
 
-    write_list(filtered, path_out)
+    write_list(sorted(filtered), path_out)
     print('Final length of the vocabulary: %d' % len(filtered))
     print('Number of training tokens: %d' % total_number_of_tokens)
 
