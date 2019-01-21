@@ -98,7 +98,7 @@ echo "Set aside shard 00000 of harem-000??-of-00010 as held-out data."
   --input_file=heldout-harem/harem-00000-of-00010
 echo "Done splitting held-out data into 1 shard."
 
-rm -rf heldout-harem/harem-00000-of-00100
+rm -rf heldout-harem/harem-00000-of-00010
 
 if [ -d training-harem.tar.gz ]
 then
