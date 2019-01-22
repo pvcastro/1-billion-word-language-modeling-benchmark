@@ -1,5 +1,7 @@
 .idea
 .ipynb_checkpoints
+scripts/__pycache__/
+
 train/
 training-harem/
 heldout-harem/
