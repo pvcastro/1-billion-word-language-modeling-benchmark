@@ -12,8 +12,16 @@ heldout-lener/
 training-wiki/
 heldout-wiki/
 wiki-processed/
+training-bert/
+training-datalawyer/
+heldout-datalawyer/
+training-iberlef/
+heldout-iberlef/
 
 *.csv
 *.pem
 *.txt
 *.tar.gz
+
+bert_pt.model
+bert_pt.vocab

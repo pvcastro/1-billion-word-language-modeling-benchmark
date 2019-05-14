@@ -6,3 +6,5 @@ get-data-juridico.sh
 	JUR_FILE=/media/discoD/Corpora/Anexos Trabalhistas/full/full.csv (merge_legal_docs.py)
 get-data-lener.sh
 	LENER_FILE=/media/discoD/repositorios/ner-re-pt-custom/sentencas_lener_dedup.csv
+get-data-harem.sh
+    HAREM_FILE=/media/discoD/repositorios/ner-re-pt-custom/sentencas_harem_dedup.csv
