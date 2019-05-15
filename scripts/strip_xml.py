@@ -10,8 +10,8 @@ else:
 
 def remover_tags_xml(caminho):
     print("Removendo tags XML de %s" % caminho)
-    text = re.sub('<[^<]+>', "", open(caminho).read())
-    with open(caminho, "w") as f:
+    text = re.sub('<[^<]+>', "", open(caminho, mode='r', encoding='utf8').read())
+    with open(caminho, "w", encoding='utf8') as f:
         f.write(text)
         print("Tags XML removidas de %s" % caminho)
 
