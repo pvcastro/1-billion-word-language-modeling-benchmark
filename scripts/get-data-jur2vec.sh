@@ -16,36 +16,36 @@
 
 # Does all the corpus preparation work.
 #
-# Assumes ptjur-latest-pages-articles.xml.bz2 (downloaded from https://dumps.jurmedia.org/ptjur/latest/)
+# Assumes ptjur2vec-latest-pages-articles.xml.bz2 (downloaded from https://dumps.jurmedia.org/ptjur/latest/)
 # have already been extracted by https://github.com/attardi/jurextractor using:
-# WikiExtractor.py -b 2G ptjur-latest-pages-articles.xml.bz2 (the parameter -b 2G produces a single file for the whole dump)
+# WikiExtractor.py -b 2G ptjur2vec-latest-pages-articles.xml.bz2 (the parameter -b 2G produces a single file for the whole dump)
 #
-# The extracted text file are extracted into a folder which must be set as $JUR_FILE
+# The extracted text file are extracted into a folder which must be set as ${JUR_FILE}
 #
 # Takes the data in:
-# $JUR_FILE, strips xml tags which separates each document in jur, removes duplication with sort -u.
+# ${JUR_FILE}, strips xml tags which separates each document in jur, removes duplication with sort -u.
 # Removes lines that contains only numbers and puncuation, shuffles every sentence, and runs punctuation
-# normalization and tokenization, producing the data in ./jur-processed/jur.tokenized.txt
+# normalization and tokenization, producing the data in ./jur2vec-processed/jur2vec.txt
 #
 # It then splits the data in 100 shards, randomly shuffled, sets aside
 # held-out data, and splits it into 50 test partitions.
 
-echo $JUR_FILE
+echo ${JUR_FILE}
 
-if [ -d jur-processed ]
+if [[ -d jur2vec-processed ]]
 then
-  rm -rf jur-processed/*
+  rm -rf jur2vec-processed/*
 else
-  mkdir jur-processed
+  mkdir jur2vec-processed
 fi
 
-FOLDER=$JUR_FILE
+FOLDER=${JUR_FILE}
 
-printf "\n***** file $JUR_FILE *****\n"
+printf "\n***** file ${JUR_FILE} *****\n"
 
-python ./scripts/strip_xml.py "$JUR_FILE"
+python ./scripts/strip_xml.py "${JUR_FILE}"
 
-python ./scripts/strip_special_lines.py $JUR_FILE jur-processed/jur.clean.txt jur-processed/jur.filtered.txt
+python ./scripts/strip_special_lines.py ${JUR_FILE} jur2vec-processed/jur.clean.txt jur2vec-processed/jur.filtered.txt
 
 # Set environemnt vars LANG and LANGUAGE to make sure all users have the same locale settings.
 export LANG=pt_BR.UTF-8
@@ -53,8 +53,9 @@ export LANGUAGE=pt_BR:
 export LC_ALL=pt_BR.UTF-8
 
 echo "Tokenizing shuffled file"
-time cat jur-processed/jur.clean.txt | \
+time cat jur2vec-processed/jur.clean.txt | \
   ./scripts/normalize-punctuation.perl -l pt | \
-  ./scripts/tokenizer.perl -l pt > \
-  jur-processed/jur.tokenized.txt
+  ./scripts/tokenizer.perl -l pt | \
+  ./scripts/lowercase.pl > \
+  jur2vec-processed/jur2vec.txt
 echo "Done tokenizing"

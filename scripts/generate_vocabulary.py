@@ -63,9 +63,17 @@ def get_tokens(filename):
 
 def filter_currency(array: list) -> list:
     filtered = [item for item in array if not re.match(
-        pattern=r"\b(?<![.,-])[0-9]{1,3}(?:,?[0-9]{3})*\.[0-9]{2}(?![.,-])\b|\b(?<![.,-])[0-9]{1,3}(?:.?[0-9]{3})*\,[0-9]{2}(?![.,-])\b",
+        pattern=r"(?<![.,])(?:- *)?\b[0-9]{1,3}(?:\.?[0-9]{3})*\,?[0-9]{2}(?![.,-])\b|(?<![.,])(?:- *)?\b[0-9]{1,3}(?:,?[0-9]{3})*\.[0-9]{2}(?![.,-])\b",
         string=item)]
     print('Size before filtering currency: %d, Size after filtering currency: %d' % (len(array), len(filtered)))
+    return filtered
+
+
+def filter_doc_id(array: list) -> list:
+    filtered = [doc_id for doc_id in array if not (
+            re.match(pattern=r"\b[0-9a-f]{7}\b", string=doc_id) and not re.match(pattern=r"\b[a-f]{7}\b",
+                                                                                 string=doc_id))]
+    print('Size before filtering doc ids: %d, Size after filtering doc ids: %d' % (len(array), len(filtered)))
     return filtered
 
 
@@ -87,7 +95,8 @@ def write_list(array: list, path_out: Path):
 
 
 def generate_vocabulary(corpus_prefix: str, path_in: str, lang: str = 'pt', min_count: int = 3,
-                        discard_currency: bool = True, discard_processes: bool = True) -> None:
+                        discard_currency: bool = True, discard_processes: bool = True,
+                        discard_doc_ids: bool = True) -> None:
     """
     :param corpus_prefix: Prefix identifying the corpus for training
     :param path_in: Example:
@@ -98,6 +107,7 @@ def generate_vocabulary(corpus_prefix: str, path_in: str, lang: str = 'pt', min_
     :param min_count: Minimum count of occurrences for the words to be added to the vocabulary
     :param discard_currency: Determine if currency values should be filtered out
     :param discard_processes: Determine if process numbers should be filtered out
+    :param discard_doc_ids: Determine if document ids should be filtered out
     :return:
     """
     print('Reading data from %s' % path_in)
@@ -107,13 +117,14 @@ def generate_vocabulary(corpus_prefix: str, path_in: str, lang: str = 'pt', min_
     path_out = Path(path_in) / file_out
     path_original_out = Path(path_in) / file_original_out
 
-    training_folder = 'training-' + corpus_prefix
-    heldout_folder = 'heldout-' + corpus_prefix
+    if not path_out.exists():
+        training_folder = 'training-' + corpus_prefix
+        heldout_folder = 'heldout-' + corpus_prefix
 
-    save_texts([path_in / training_folder], 'train_' + corpus_prefix, lang)
-    save_texts([path_in / heldout_folder], 'test_' + corpus_prefix, lang)
+        save_texts([path_in / training_folder], 'train_' + corpus_prefix, lang)
+        save_texts([path_in / heldout_folder], 'test_' + corpus_prefix, lang)
 
-    save_texts([path_in / training_folder, path_in / heldout_folder], 'full_' + corpus_prefix, lang)
+        save_texts([path_in / training_folder, path_in / heldout_folder], 'full_' + corpus_prefix, lang)
 
     full_file = 'full_' + corpus_prefix + '_' + lang + '.csv'
     freq_full = Counter(p for o in chain.from_iterable(get_tokens(full_file)) for p in o)
@@ -134,6 +145,9 @@ def generate_vocabulary(corpus_prefix: str, path_in: str, lang: str = 'pt', min_
 
     if discard_processes:
         filtered = filter_processes(filtered)
+
+    if discard_doc_ids:
+        filtered = filter_doc_id(filtered)
 
     write_list(sorted(filtered), path_out)
     print('Final length of the vocabulary: %d' % len(filtered))

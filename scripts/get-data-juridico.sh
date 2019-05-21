@@ -97,3 +97,16 @@ echo "Set aside shard 00000 of jur-000??-of-00100 as held-out data."
   --num_shards=50 \
   --input_file=heldout-jur/jur-00000-of-00100
 echo "Done splitting held-out data into 50 shards."
+
+rm -rf heldout-jur/jur-00000-of-00010
+
+if [ -d training-jur.tar.gz ]
+then
+    rm -rf training-jur.tar.gz
+    rm -rf heldout-jur.tar.gz
+else
+    tar -czvf training-jur.tar.gz training-jur
+    tar -czvf heldout-jur.tar.gz heldout-jur
+fi
+
+echo "python ./scripts/generate_vocabulary.py --corpus-prefix jur --path-in "$(pwd)""
