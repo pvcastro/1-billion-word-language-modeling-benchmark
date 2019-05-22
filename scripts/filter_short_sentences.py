@@ -1,5 +1,4 @@
 import sys, codecs
-from split_text import split
 
 if len(sys.argv) >= 4:
     caminho_entrada = sys.argv[1]
@@ -16,18 +15,17 @@ def remover_linhas_curtas(caminho_entrada, caminho_saida, caminho_curtas):
     count_curtas = 0
     output_clean = codecs.open(caminho_saida, "w", 'utf-8')
     output_curtas = codecs.open(caminho_curtas, "w", 'utf-8')
-    for line in codecs.open(caminho_entrada, 'r', 'utf-8'):
-        for sent in split(line, True):
-            if sent.count(' ') >= 3:
-                if sent[0:2] == '- ':
-                    sent = sent[2:]
-                elif sent[0] == ' ' or sent[0] == '-':
-                    sent = sent[1:]
-                output_clean.write(sent)
-                count_clean = count_clean + 1
-            else:
-                output_curtas.write(line)
-                count_curtas = count_curtas + 1
+    for sent in codecs.open(caminho_entrada, 'r', 'utf-8'):
+        if sent.count(' ') >= 4:
+            if sent[0:2] == '- ':
+                sent = sent[2:]
+            elif sent[0] == ' ' or sent[0] == '-':
+                sent = sent[1:]
+            output_clean.write(sent)
+            count_clean = count_clean + 1
+        else:
+            output_curtas.write(sent)
+            count_curtas = count_curtas + 1
     print("Escritas %d linhas de %s em %s" % (count_clean, caminho_entrada, caminho_saida))
     print("Escritas %d linhas de %s em %s" % (count_curtas, caminho_entrada, caminho_curtas))
     output_clean.close()

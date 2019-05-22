@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-import re, string, collections, sys, codecs
+import re, string, collections, codecs
 import pandas as pd
 from nltk.tokenize.punkt import PunktSentenceTokenizer, PunktParameters, PunktLanguageVars
-from pathlib import Path
 
 
 def split_texts_by_sentences(path_in, path_out):
