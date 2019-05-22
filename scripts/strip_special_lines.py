@@ -6,7 +6,7 @@ if len(sys.argv) >= 4:
     caminho_especiais = sys.argv[3]
     print(sys.argv)
 if len(sys.argv) == 5:
-    tamanho_minimo_sentencas = sys.argv[4]
+    tamanho_minimo_sentencas = int(sys.argv[4])
 else:
     print("Usage: python strip_special_lines.py caminho_entrada caminho_saida caminho_especiais")
     sys.exit()
