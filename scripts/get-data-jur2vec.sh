@@ -45,7 +45,7 @@ printf "\n***** file ${JUR_FILE} *****\n"
 
 python ./scripts/strip_xml.py "${JUR_FILE}"
 
-python ./scripts/strip_special_lines.py ${JUR_FILE} jur2vec-processed/jur.clean.txt jur2vec-processed/jur.filtered.txt 3
+python ./scripts/strip_special_lines.py ${JUR_FILE} jur2vec-processed/jur.clean.txt jur2vec-processed/jur.filtered.txt
 
 # Set environemnt vars LANG and LANGUAGE to make sure all users have the same locale settings.
 export LANG=pt_BR.UTF-8
@@ -57,5 +57,9 @@ time cat jur2vec-processed/jur.clean.txt | \
   ./scripts/normalize-punctuation.perl -l pt | \
   ./scripts/tokenizer.perl -l pt | \
   ./scripts/lowercase.pl > \
-  jur2vec-processed/jur2vec.txt
+  jur2vec-processed/jur.tokenized.txt
 echo "Done tokenizing"
+
+echo "Removing short sentences"
+time python ./scripts/filter_short_sentences.py jur2vec-processed/jur.tokenized.txt jur2vec-processed/jur2vec.txt jur2vec-processed/jur.short.txt
+echo "Done Removing short sentences"

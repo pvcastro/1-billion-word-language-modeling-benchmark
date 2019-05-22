@@ -26,6 +26,13 @@ class CustomVars(PunktLanguageVars):
     sent_end_chars = ('.', '?', '!', ';')
 
 
+punkt_param = PunktParameters()
+punkt_param.abbrev_types = set(pd.read_csv('https://s3.amazonaws.com/datalawyer-models/datalawyer/lista_abreviacoes_lower.csv', header=None)[0].values)
+regex = re.compile('[%s]' % re.escape(string.punctuation))
+replacements = {"Dr(a)": "Dr_a_", "Sr(a)": "Sr_a_", "Exmo(a)": "Exmo_a_"}
+replacements_rev = {value: key for (key, value) in replacements.items()}
+
+
 def sentence_tokenize(sentence_tokenizer, text):
     return [multi_replace(sentence, replacements_rev, ignore_case=True) for sentence in sentence_tokenizer.tokenize(
         multi_replace(text, replacements, ignore_case=True))]
@@ -107,22 +114,3 @@ def split_by_sentence(text, use_semicolon=False):
 def split(text, use_semicolon=False):
     segments_by_break = split_by_break(text)
     return split_by_sentence(segments_by_break, use_semicolon)
-
-
-if __name__ == '__main__':
-    if len(sys.argv) == 4:
-        path_in = sys.argv[1]
-        path_out = sys.argv[2]
-        path_nbp = sys.argv[3]
-        print(sys.argv)
-    else:
-        print("Usage: python split_text.py path_in path_out")
-        sys.exit()
-
-    punkt_param = PunktParameters()
-    punkt_param.abbrev_types = set(pd.read_csv(path_nbp, header=None)[0].values)
-    regex = re.compile('[%s]' % re.escape(string.punctuation))
-    replacements = {"Dr(a)": "Dr_a_", "Sr(a)": "Sr_a_", "Exmo(a)": "Exmo_a_"}
-    replacements_rev = {value: key for (key, value) in replacements.items()}
-
-    split_texts_by_sentences(path_in, path_out)

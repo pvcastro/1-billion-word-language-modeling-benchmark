@@ -25,3 +25,5 @@ heldout-iberlef/
 
 bert_pt.model
 bert_pt.vocab
+
+!scripts/lista_abreviacoes_lower.csv
