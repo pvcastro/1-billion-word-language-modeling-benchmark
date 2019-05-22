@@ -45,7 +45,7 @@ printf "\n***** file ${JUR_FILE} *****\n"
 
 python ./scripts/strip_xml.py "${JUR_FILE}"
 
-python ./scripts/strip_special_lines.py ${JUR_FILE} jur2vec-processed/jur.clean.txt jur2vec-processed/jur.filtered.txt
+python ./scripts/strip_special_lines.py ${JUR_FILE} jur2vec-processed/jur.clean.txt jur2vec-processed/jur.filtered.txt 3
 
 # Set environemnt vars LANG and LANGUAGE to make sure all users have the same locale settings.
 export LANG=pt_BR.UTF-8
