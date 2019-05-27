@@ -80,10 +80,10 @@ class ElasticsearchIterable(object):
 class AnexoIterable(ElasticsearchIterable):
 
     def __init__(self, ano, regiao, sort=True, all_docs=True, index='teste_anexos_renan_3', doc_type='anexo_trt',
-                 request_timeout=10, limit=None):
+                 request_timeout=10, step=1000, limit=None):
         super().__init__(query=get_query_anexos(ano, regiao, sort), elasticsearch_host='192.168.40.36',
                          index=index, doc_type=doc_type, all_docs=all_docs, request_timeout=request_timeout,
-                         limit=limit)
+                         limit=limit, step=step)
 
 
 class RegiaoIterable(object):
@@ -120,18 +120,6 @@ class AnoIterable(object):
                 yield anexo['corpo']
 
 
-def get_corpo_anexo(nome_arquivo, host='192.168.40.36', index="teste_anexos_renan_3"):
-    query = {
-        "query": {
-            "query_string": {"query": "(arquivo.keyword:\"" + nome_arquivo + "\")"}
-        }
-    }
-    es = Elasticsearch(host, port=9200)
-    res = es.search(index=index, body=query)
-    assert res['hits']['total'] == 1
-    return res['hits']['hits'][0]['_source']['corpo']
-
-
 def get_query_anexos(ano, regiao, sort=False):
     query = {
         "query": {
@@ -140,7 +128,8 @@ def get_query_anexos(ano, regiao, sort=False):
                     {
                         "query_string": {
                             "query": "(numero_processo:?????????" + str(ano) + "5" + str(regiao).zfill(2) +
-                                     "????) AND NOT (corpo.keyword:\"\")"
+                                     "????) AND ((descricao:Ata da Audiência) OR (descricao:Acórdão) OR (descricao:Sentença)) " +
+                                     "AND NOT (corpo.keyword:\"\")"
                         }
                     },
                     {

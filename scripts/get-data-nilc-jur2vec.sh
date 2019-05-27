@@ -25,27 +25,25 @@
 # Takes the data in:
 # ${JUR_FILE}, strips xml tags which separates each document in jur, removes duplication with sort -u.
 # Removes lines that contains only numbers and puncuation, shuffles every sentence, and runs punctuation
-# normalization and tokenization, producing the data in ./jur2vec-processed/jur2vec.txt
+# normalization and tokenization, producing the data in ./nilc-jur2vec-processed/jur2vec.txt
 #
 # It then splits the data in 100 shards, randomly shuffled, sets aside
 # held-out data, and splits it into 50 test partitions.
 
 echo ${JUR_FILE}
 
-if [[ -d jur2vec-processed ]]
+if [[ -d nilc-jur2vec-processed ]]
 then
-  rm -rf jur2vec-processed/*
+  rm -rf nilc-jur2vec-processed/*
 else
-  mkdir jur2vec-processed
+  mkdir nilc-jur2vec-processed
 fi
 
 FOLDER=${JUR_FILE}
 
 printf "\n***** file ${JUR_FILE} *****\n"
 
-#python ./scripts/strip_xml.py "${JUR_FILE}"
-
-python ./scripts/strip_special_lines.py ${JUR_FILE} jur2vec-processed/jur.clean.txt jur2vec-processed/jur.filtered.txt
+python ./scripts/nilc_cleaning.py ${JUR_FILE} nilc-jur2vec-processed/jur.clean.txt
 
 # Set environemnt vars LANG and LANGUAGE to make sure all users have the same locale settings.
 export LANG=pt_BR.UTF-8
@@ -53,13 +51,9 @@ export LANGUAGE=pt_BR:
 export LC_ALL=pt_BR.UTF-8
 
 echo "Tokenizing shuffled file"
-time cat jur2vec-processed/jur.clean.txt | \
+time cat nilc-jur2vec-processed/jur.clean.txt | \
   ./scripts/normalize-punctuation.perl -l pt | \
   ./scripts/tokenizer.perl -l pt | \
   ./scripts/lowercase.pl > \
-  jur2vec-processed/jur.tokenized.txt
+  nilc-jur2vec-processed/jur2vec.txt
 echo "Done tokenizing"
-
-echo "Removing short sentences"
-time python ./scripts/filter_short_sentences.py jur2vec-processed/jur.tokenized.txt jur2vec-processed/jur2vec.txt jur2vec-processed/jur.short.txt
-echo "Done Removing short sentences"
