@@ -12,8 +12,8 @@ All sentences shorter than 5 tokens were removed.
 ...
 """
 
-import argparse
-import re
+import re, argparse
+from datetime import datetime
 
 # Punctuation list
 punctuations = re.escape('!"#%\'()*+,./:;<=>?@[\\]^_`{|}~')
@@ -44,6 +44,10 @@ re_changehyphen = re.compile(u'–')
 re_doublequotes_1 = re.compile(r'(\"\")')
 re_doublequotes_2 = re.compile(r'(\'\')')
 re_trim = re.compile(r' +', re.UNICODE)
+
+
+def log(message):
+    print(datetime.now(), '-', message)
 
 
 def clean_text(text):
@@ -96,24 +100,24 @@ if __name__ == '__main__':
     final = []
 
     with open(f_in, 'r', encoding='utf8') as f:
-        print('Counting lines...')
+        log('Counting lines...')
         wc_l = sum(1 for l in f)
-        print('Counted %d lines' % wc_l)
+        log('Counted %d lines' % wc_l)
 
     # Clean lines.
     with open(f_out, 'w', encoding='utf8') as fp:
         with open(f_in, 'r', encoding='utf8') as f:
-            print('Cleaning lines...')
+            log('Cleaning lines...')
             for i, line in enumerate(f):
-                if not re.match("^[^a-zA-Z]+$", line):
-                    clean_line = clean_text(line)
-                    if clean_line.count(' ') >= 4:
-                        if clean_line[0:2] == '- ':
-                            clean_line = clean_line[2:]
-                        elif clean_line[0] == ' ' or clean_line[0] == '-':
-                            clean_line = clean_line[1:]
-                        fp.write(clean_line + '\n')
-                        written += 1
+                # if not re.match("^[^a-zA-Z]+$", line):
+                clean_line = clean_text(line)
+                if clean_line.count(' ') >= 3:
+                    if clean_line[0:2] == '- ':
+                        clean_line = clean_line[2:]
+                    elif clean_line[0] == ' ' or clean_line[0] == '-':
+                        clean_line = clean_line[1:]
+                    fp.write(clean_line + '\n')
+                    written += 1
                 if (i + 1) % 100000 == 0:
-                    print('Cleaned %d of %d' % (i + 1, wc_l))
-    print('Finished writing %d from %d lines' % (written, wc_l))
+                    log('Cleaned %d of %d' % (i + 1, wc_l))
+    log('Finished writing %d from %d lines' % (written, wc_l))
