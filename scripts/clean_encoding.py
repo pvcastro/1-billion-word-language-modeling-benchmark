@@ -27,7 +27,7 @@ if __name__ == '__main__':
     txt, wc_l, written = [], 0, 0
     final = []
 
-    with open(f_in, 'r', encoding='utf8') as f:
+    with open(f_in, 'r', encoding='utf8', errors='ignore') as f:
         log('Counting lines...')
         wc_l = sum(1 for l in f)
         log('Counted %d lines' % wc_l)
