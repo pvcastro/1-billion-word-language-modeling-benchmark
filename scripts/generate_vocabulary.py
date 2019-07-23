@@ -11,6 +11,10 @@ import pandas as pd
 from typing import Callable, List, Collection
 from concurrent.futures.process import ProcessPoolExecutor
 
+from sacremoses import MosesTokenizer
+
+ORTH = 65
+
 
 def partition(a:Collection, sz:int)->List[Collection]:
     "Split iterables `a` in equal parts of size `sz`"
@@ -34,21 +38,16 @@ class BaseTokenizer():
     "Basic class for a tokenizer function."
     def __init__(self, lang:str):                      self.lang = lang
     def tokenizer(self, t:str) -> List[str]:           return t.split(' ')
-    def add_special_cases(self, toks:Collection[str]): pass
 
 
 class SpacyTokenizer(BaseTokenizer):
     "Wrapper around a spacy tokenizer to make it a `BaseTokenizer`."
 
     def __init__(self, lang:str):
-        self.tok = spacy.blank(lang)
+        self.tok = MosesTokenizer('pt')
 
     def tokenizer(self, t:str) -> List[str]:
-        return [t.text for t in self.tok.tokenizer(t)]
-
-    def add_special_cases(self, toks:Collection[str]):
-        for w in toks:
-            self.tok.tokenizer.add_special_case(w, [{ORTH: w}])
+        return [t.text for t in self.tok.tokenize(t)]
 
 
 class VocabularyTokenizer():
