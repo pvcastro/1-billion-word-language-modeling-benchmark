@@ -32,7 +32,7 @@
 
 echo $JUR_FILE
 
-if [ -d jur-processed ]
+if [[ -d jur-processed ]]
 then
   rm -rf jur-processed/*
 else
@@ -43,7 +43,7 @@ FOLDER=$JUR_FILE
 
 printf "\n***** file $JUR_FILE *****\n"
 
-python ./scripts/strip_xml.py "$JUR_FILE"
+#python ./scripts/strip_xml.py "$JUR_FILE"
 
 echo "Sorting $JUR_FILE"
 cat "$JUR_FILE" | sort -u --output=jur-processed/jur.sort.txt
@@ -68,7 +68,7 @@ time cat jur-processed/jur.shuffled.txt | \
 echo "Done tokenizing"
 
 # Split the data in 100 shards
-if [ -d training-jur ]
+if [[ -d training-jur ]]
 then
   rm -rf training-jur/*
 else
@@ -81,7 +81,7 @@ fi
 echo "Done splitting corpus into 100 shards jur-000??-of-00100."
 
 # Hold 00000 shard out, and split it 50 way.
-if [ -d heldout-jur ]
+if [[ -d heldout-jur ]]
 then
   rm -rf heldout-jur/*
 else
@@ -100,7 +100,7 @@ echo "Done splitting held-out data into 50 shards."
 
 rm -rf heldout-jur/jur-00000-of-00010
 
-if [ -d training-jur.tar.gz ]
+if [[ -d training-jur.tar.gz ]]
 then
     rm -rf training-jur.tar.gz
     rm -rf heldout-jur.tar.gz

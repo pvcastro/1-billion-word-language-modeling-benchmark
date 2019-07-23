@@ -1,7 +1,5 @@
 # coding: utf-8
 
-from fastai.text import *
-from fastai.core import num_cpus, partition_by_cores
 from pathlib import Path
 from collections import Counter
 from itertools import chain
@@ -12,6 +10,45 @@ import pandas as pd
 
 from typing import Callable, List, Collection
 from concurrent.futures.process import ProcessPoolExecutor
+
+
+def partition(a:Collection, sz:int)->List[Collection]:
+    "Split iterables `a` in equal parts of size `sz`"
+    return [a[i:i+sz] for i in range(0, len(a), sz)]
+
+
+def partition_by_cores(a:Collection, n_cpus:int)->List[Collection]:
+    "Split data in `a` equally among `n_cpus` cores"
+    return partition(a, len(a)//n_cpus + 1)
+
+
+def num_cpus()->int:
+    "Get number of cpus"
+    try:
+        return len(os.sched_getaffinity(0))
+    except AttributeError:
+        return os.cpu_count()
+
+
+class BaseTokenizer():
+    "Basic class for a tokenizer function."
+    def __init__(self, lang:str):                      self.lang = lang
+    def tokenizer(self, t:str) -> List[str]:           return t.split(' ')
+    def add_special_cases(self, toks:Collection[str]): pass
+
+
+class SpacyTokenizer(BaseTokenizer):
+    "Wrapper around a spacy tokenizer to make it a `BaseTokenizer`."
+
+    def __init__(self, lang:str):
+        self.tok = spacy.blank(lang)
+
+    def tokenizer(self, t:str) -> List[str]:
+        return [t.text for t in self.tok.tokenizer(t)]
+
+    def add_special_cases(self, toks:Collection[str]):
+        for w in toks:
+            self.tok.tokenizer.add_special_case(w, [{ORTH: w}])
 
 
 class VocabularyTokenizer():
