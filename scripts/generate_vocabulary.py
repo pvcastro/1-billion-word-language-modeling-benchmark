@@ -47,7 +47,7 @@ class SpacyTokenizer(BaseTokenizer):
         self.tok = MosesTokenizer('pt')
 
     def tokenizer(self, t:str) -> List[str]:
-        return [t.text for t in self.tok.tokenize(t)]
+        return [token for token in self.tok.tokenize(t)]
 
 
 class VocabularyTokenizer():
