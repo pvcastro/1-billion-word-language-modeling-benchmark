@@ -133,8 +133,8 @@ def write_list(array: list, path_out: Path):
 
 
 def generate_vocabulary(corpus_prefix: str, path_in: str, lang: str = 'pt', min_count: int = 3,
-                        discard_currency: bool = True, discard_processes: bool = True,
-                        discard_doc_ids: bool = True) -> None:
+                        discard_currency: bool = False, discard_processes: bool = False,
+                        discard_doc_ids: bool = False) -> None:
     """
     :param corpus_prefix: Prefix identifying the corpus for training
     :param path_in: Example:
