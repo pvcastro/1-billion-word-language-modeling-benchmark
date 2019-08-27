@@ -16,17 +16,17 @@ from sacremoses import MosesTokenizer
 ORTH = 65
 
 
-def partition(a:Collection, sz:int)->List[Collection]:
+def partition(a: Collection, sz: int) -> List[Collection]:
     "Split iterables `a` in equal parts of size `sz`"
-    return [a[i:i+sz] for i in range(0, len(a), sz)]
+    return [a[i:i + sz] for i in range(0, len(a), sz)]
 
 
-def partition_by_cores(a:Collection, n_cpus:int)->List[Collection]:
+def partition_by_cores(a: Collection, n_cpus: int) -> List[Collection]:
     "Split data in `a` equally among `n_cpus` cores"
-    return partition(a, len(a)//n_cpus + 1)
+    return partition(a, len(a) // n_cpus + 1)
 
 
-def num_cpus()->int:
+def num_cpus() -> int:
     "Get number of cpus"
     try:
         return len(os.sched_getaffinity(0))
@@ -36,17 +36,19 @@ def num_cpus()->int:
 
 class BaseTokenizer():
     "Basic class for a tokenizer function."
-    def __init__(self, lang:str):                      self.lang = lang
-    def tokenizer(self, t:str) -> List[str]:           return t.split(' ')
+
+    def __init__(self, lang: str):                      self.lang = lang
+
+    def tokenizer(self, t: str) -> List[str]:           return t.split(' ')
 
 
 class SpacyTokenizer(BaseTokenizer):
     "Wrapper around a spacy tokenizer to make it a `BaseTokenizer`."
 
-    def __init__(self, lang:str):
+    def __init__(self, lang: str):
         self.tok = MosesTokenizer('pt')
 
-    def tokenizer(self, t:str) -> List[str]:
+    def tokenizer(self, t: str) -> List[str]:
         return [token for token in self.tok.tokenize(t)]
 
 
@@ -107,8 +109,8 @@ def filter_currency(array: list) -> list:
 
 def filter_doc_id(array: list) -> list:
     filtered = [doc_id for doc_id in array if not (
-            re.match(pattern=r"\b[0-9a-f]{7}\b", string=doc_id) and not re.match(pattern=r"\b[a-f]{7}\b",
-                                                                                 string=doc_id))]
+            re.match(pattern=r"\b[0-9a-f]{6,7}\b", string=doc_id) and not re.match(pattern=r"\b[a-f]{6,7}\b",
+                                                                                   string=doc_id))]
     print('Size before filtering doc ids: %d, Size after filtering doc ids: %d' % (len(array), len(filtered)))
     return filtered
 
