@@ -43,7 +43,7 @@ FOLDER=$WIKI_FILE
 
 printf "\n***** file $WIKI_FILE *****\n"
 
-python ./scripts/strip_xml.py "$WIKI_FILE"
+#python ./scripts/strip_xml.py "$WIKI_FILE"
 
 echo "Sorting $WIKI_FILE"
 cat "$WIKI_FILE" | sort -u --output=wiki-processed/wiki.sort.txt
