@@ -4,7 +4,7 @@ from pathlib import Path
 from collections import Counter
 from itertools import chain
 
-import os, fire, re, csv
+import os, fire, re, csv, pickle
 
 import pandas as pd
 
@@ -132,6 +132,10 @@ def write_list(array: list, path_out: Path):
     file.close()
 
 
+def get_freq_filename(corpus_prefix: str, lang: str = 'pt'):
+    return 'freq_' + corpus_prefix + '_' + lang + '.pickle'
+
+
 def generate_vocabulary(corpus_prefix: str, path_in: str, lang: str = 'pt', min_count: int = 3,
                         discard_currency: bool = False, discard_processes: bool = False,
                         discard_doc_ids: bool = False) -> None:
@@ -154,18 +158,31 @@ def generate_vocabulary(corpus_prefix: str, path_in: str, lang: str = 'pt', min_
     file_original_out = 'vocabulary_original_' + corpus_prefix + '_' + lang + '.txt'
     path_out = Path(path_in) / file_out
     path_original_out = Path(path_in) / file_original_out
+    freq_filename = get_freq_filename(corpus_prefix, lang)
+    freq_file = path_in / freq_filename
 
-    if not path_out.exists():
-        training_folder = 'training-' + corpus_prefix
-        heldout_folder = 'heldout-' + corpus_prefix
+    if not freq_file.exists():
 
-        save_texts([path_in / training_folder], 'train_' + corpus_prefix, lang)
-        save_texts([path_in / heldout_folder], 'test_' + corpus_prefix, lang)
+        if not path_out.exists():
+            training_folder = 'training-' + corpus_prefix
+            heldout_folder = 'heldout-' + corpus_prefix
 
-        save_texts([path_in / training_folder, path_in / heldout_folder], 'full_' + corpus_prefix, lang)
+            save_texts([path_in / training_folder], 'train_' + corpus_prefix, lang)
+            save_texts([path_in / heldout_folder], 'test_' + corpus_prefix, lang)
 
-    full_file = 'full_' + corpus_prefix + '_' + lang + '.csv'
-    freq_full = Counter(p for o in chain.from_iterable(get_tokens(full_file)) for p in o)
+            save_texts([path_in / training_folder, path_in / heldout_folder], 'full_' + corpus_prefix, lang)
+
+        full_file = 'full_' + corpus_prefix + '_' + lang + '.csv'
+        freq_full = Counter(p for o in chain.from_iterable(get_tokens(full_file)) for p in o)
+
+        with freq_file.open(mode='wb') as f:
+            pickle.dump(freq_full, f)
+        f.close()
+
+    else:
+        with freq_file.open(mode='rb') as f:
+            freq_full = pickle.load(f)
+        f.close()
 
     total_number_of_tokens = sum(freq_full.values())
     print('Total number of tokens: %d' % total_number_of_tokens)
