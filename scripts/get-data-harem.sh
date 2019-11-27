@@ -43,7 +43,7 @@ FOLDER=$HAREM_FILE
 
 printf "\n***** file $HAREM_FILE *****\n"
 
-python ./scripts/strip_xml.py "$HAREM_FILE"
+#python ./scripts/strip_xml.py "$HAREM_FILE"
 
 echo "Sorting $HAREM_FILE"
 cat "$HAREM_FILE" | sort -u --output=harem-processed/harem.sort.txt

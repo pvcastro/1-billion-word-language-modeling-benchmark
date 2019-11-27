@@ -79,11 +79,13 @@ class ElasticsearchIterable(object):
 
 class AnexoIterable(ElasticsearchIterable):
 
-    def __init__(self, ano, regiao, sort=True, all_docs=True, index='teste_anexos_renan_3', doc_type='anexo_trt',
-                 request_timeout=10, step=1000, limit=None):
-        super().__init__(query=get_query_anexos(ano, regiao, sort), elasticsearch_host='192.168.40.36',
+    def __init__(self, ano, regiao, elasticsearch_host='elastic-bd.avisourgente', all_docs=True,
+                 index='processo_documentos', doc_type='processo_documento', request_timeout=10, step=1000, limit=None):
+        super().__init__(query=get_query_anexos(ano, regiao), elasticsearch_host=elasticsearch_host,
                          index=index, doc_type=doc_type, all_docs=all_docs, request_timeout=request_timeout,
                          limit=limit, step=step)
+        self.ano = ano
+        self.regiao = regiao
 
 
 class RegiaoIterable(object):
@@ -120,29 +122,22 @@ class AnoIterable(object):
                 yield anexo['corpo']
 
 
-def get_query_anexos(ano, regiao, sort=False):
-    query = {
+def get_query_anexos(ano, regiao):
+    return {
         "query": {
             "bool": {
                 "must": [
                     {
                         "query_string": {
-                            "query": "(numero_processo:?????????" + str(ano) + "5" + str(regiao).zfill(2) +
-                                     "????) AND ((descricao:Ata da Audiência) OR (descricao:Acórdão) OR (descricao:Sentença)) " +
-                                     "AND NOT (corpo.keyword:\"\")"
-                        }
-                    },
-                    {
-                        "range": {
-                            "tamanho": {
-                                "gt": 0
-                            }
+                            "query": "(NumeroCnj:???????-??." + str(ano) + ".5." + str(regiao).zfill(
+                                2) + ".????) AND "
+                                     "((TipoDocumento.raw:Ata da Audiência) OR "
+                                     "(TipoDocumento.raw:Acórdão) OR "
+                                     "(TipoDocumento.raw:Sentença) OR "
+                                     "(TipoDocumento.raw:Petição Inicial))"
                         }
                     }
                 ]
             }
         }
     }
-    if sort:
-        query['sort'] = [{"tamanho": {"order": "desc"}}]
-    return query
