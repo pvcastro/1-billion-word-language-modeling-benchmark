@@ -126,15 +126,24 @@ def get_query_anexos(ano, regiao):
     return {
         "query": {
             "bool": {
-                "must": [
+                "filter": [
                     {
-                        "query_string": {
-                            "query": "(NumeroCnj:???????-??." + str(ano) + ".5." + str(regiao).zfill(
-                                2) + ".????) AND "
-                                     "((TipoDocumento.raw:Ata da Audiência) OR "
-                                     "(TipoDocumento.raw:Acórdão) OR "
-                                     "(TipoDocumento.raw:Sentença) OR "
-                                     "(TipoDocumento.raw:Petição Inicial))"
+                        "term": {
+                            "Tribunal": {
+                                "value": regiao
+                            }
+                        }
+                    },
+                    {
+                        "term": {
+                            "Ano": {
+                                "value": ano
+                            }
+                        }
+                    },
+                    {
+                        "terms": {
+                            "TipoDocumento.raw": ["Ata da Audiência", "Acórdão", "Sentença", "Decisão"]
                         }
                     }
                 ]
